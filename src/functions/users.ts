@@ -1,5 +1,5 @@
-import { client } from './graphql'
 import { gql } from 'graphql-request'
+import { client } from './graphql'
 
 export const isUser = (user: string) => !!user.match(/<@(.+?)>/)
 
