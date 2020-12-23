@@ -223,7 +223,7 @@ const send = (app: App) => {
 	app.command('/pay', async ({ ack, command }) => {
 		await ack()
 
-		const [id] = command.split(' ')
+		const [id] = command.text.split(' ')
 
 		const { channel_id: channel, user_id: user } = command
 
