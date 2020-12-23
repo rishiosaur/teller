@@ -1,6 +1,6 @@
 import { App } from '@slack/bolt'
-import { unwrapUser, userExists, createUser } from '../functions/users'
 import { gql } from 'graphql-request'
+import { unwrapUser, userExists, createUser } from '../functions/users'
 import { client } from '../functions/graphql'
 import {
 	blocksAndText,
@@ -223,7 +223,11 @@ const send = (app: App) => {
 	app.command('/pay', async ({ ack, command }) => {
 		await ack()
 
-		const [t] = command.split(' ')
+		const [id] = command.split(' ')
+
+		const { channel_id: channel, user_id: user } = command
+
+		const sayEphemeral = postEphemeralUserCurry(channel, user)
 
 		const findTransaction = gql`
 			query Query($id: String!) {
@@ -233,21 +237,58 @@ const send = (app: App) => {
 					}
 
 					to {
-						id=]
+						id
 					}
 				}
 			}
-        `
+		`
 
 		const transaction = await client
 			.request(findTransaction, {
-				id: t,
+				id,
 			})
 			.then((t) => t)
 			.catch(() => false)
 
-		if (transaction) {
+		if (transaction && transaction.transaction.from.id === user) {
+			const payTransaction = gql`
+				mutation PayTransaction($id: ID!) {
+					pay(id: $id) {
+						id
+						balance
+						from {
+							id
+						}
+						to {
+							id
+						}
+
+						validated
+					}
+				}
+			`
+
+			const { pay: paid } = await client.request(payTransaction)
+
+			if (paid.validated) {
+				sayEphemeral(
+					...blocksAndText(
+						`You've paid transaction \`${id}\` with ${paid.balance} HN.`
+					)
+				)
+			} else {
+				sayEphemeral(
+					...blocksAndText(
+						`Oh no! It looks like you don't have ${paid.balance} or more HN. This transaction cannot be completed at this time.`
+					)
+				)
+			}
 		} else {
+			sayEphemeral(
+				...blocksAndText(
+					`It looks like I've run into an error! Either transaction \`${id}\` doesn't exist, or you aren't the person that made it.`
+				)
+			)
 		}
 	})
 }
