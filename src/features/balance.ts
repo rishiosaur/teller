@@ -1,8 +1,12 @@
-import { postEphemeralCurry } from './../functions/chat'
 import { App } from '@slack/bolt'
 import { gql } from 'graphql-request'
+import {
+	postEphemeralCurry,
+	postEphemeralUserCurry,
+	blocksAndText,
+} from '../functions/chat'
 import { client } from '../functions/graphql'
-import { postEphemeralUserCurry, blocksAndText } from '../functions/chat'
+
 import { unwrapUser, userExists } from '../functions/users'
 
 const balance = async (app: App) => {
