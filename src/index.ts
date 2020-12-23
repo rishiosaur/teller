@@ -1,5 +1,5 @@
-import { signing_secret, token, name } from './config'
 import { App } from '@slack/bolt'
+import { signing_secret, token, name } from './config'
 import {
 	filterDM,
 	filterNoBotMessages,
@@ -9,9 +9,8 @@ import * as features from './features/index'
 
 export const app = new App({
 	signingSecret: signing_secret,
-	token: token,
+	token,
 })
-
 ;(async () => {
 	// Start your app
 	await app.start(process.env.PORT || 3000)
