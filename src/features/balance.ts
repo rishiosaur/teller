@@ -1,7 +1,6 @@
 import { App } from '@slack/bolt'
 import { gql } from 'graphql-request'
 import {
-	postEphemeralCurry,
 	postEphemeralUserCurry,
 	blocksAndText,
 	postMessageCurry,
@@ -49,12 +48,6 @@ const balance = async (app: App) => {
 				{
 					type: 'context',
 					elements: [
-						{
-							type: 'image',
-							image_url:
-								'https://pbs.twimg.com/profile_images/625633822235693056/lNGUneLX_400x400.jpg',
-							alt_text: 'cute cat',
-						},
 						{
 							type: 'mrkdwn',
 							text: `Requested by <@${command.user_id}>`,
