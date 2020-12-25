@@ -4,13 +4,14 @@ import {
 	postEphemeralCurry,
 	postEphemeralUserCurry,
 	blocksAndText,
+	postMessageCurry,
 } from '../functions/chat'
 import { client } from '../functions/graphql'
 
 import { unwrapUser, userExists } from '../functions/users'
 
 const balance = async (app: App) => {
-	app.command('/peek', async ({ ack, command, say }) => {
+	app.command('/peek', async ({ ack, command }) => {
 		await ack()
 		const { channel_id: channel } = command
 
@@ -20,6 +21,7 @@ const balance = async (app: App) => {
 		console.log(user)
 
 		const sayEphemeral = postEphemeralUserCurry(channel, command.user_id)
+		const say = postMessageCurry(channel)
 
 		const query = gql`
 			query User($user: String!) {
@@ -36,11 +38,30 @@ const balance = async (app: App) => {
 				user,
 			})
 
-			sayEphemeral(
-				...blocksAndText(
-					`It appears that <@${user}> has a balance of ${x.user.balance}‡. (Requested by <@${command.user_id}>)`
-				)
-			)
+			say([
+				{
+					type: 'section',
+					text: {
+						type: 'mrkdwn',
+						text: `It appears that <@${user}> has a balance of ${x.user.balance}‡. `,
+					},
+				},
+				{
+					type: 'context',
+					elements: [
+						{
+							type: 'image',
+							image_url:
+								'https://pbs.twimg.com/profile_images/625633822235693056/lNGUneLX_400x400.jpg',
+							alt_text: 'cute cat',
+						},
+						{
+							type: 'mrkdwn',
+							text: `Requested by <@${command.user_id}>`,
+						},
+					],
+				},
+			])
 		} else {
 			const query = gql`
 				mutation CreateUser($user: String!) {
@@ -59,14 +80,12 @@ const balance = async (app: App) => {
 			)
 
 			sayEphemeral(
-				...blocksAndText(
-					`It appears that <@${user}> has a balance of 0‡. (Requested by <@${command.user_id}>)`
-				)
+				...blocksAndText(`It appears that <@${user}> has a balance of 0‡.`)
 			)
 		}
 	})
 
-	app.command('/balance', async ({ ack, command, say }) => {
+	app.command('/balance', async ({ ack, command }) => {
 		await ack()
 		const { channel_id: channel } = command
 
@@ -76,6 +95,7 @@ const balance = async (app: App) => {
 		console.log(user)
 
 		const sayEphemeral = postEphemeralUserCurry(channel, command.user_id)
+		const say = postMessageCurry(channel)
 
 		const query = gql`
 			query User($user: String!) {
@@ -92,9 +112,24 @@ const balance = async (app: App) => {
 				user,
 			})
 
-			say(
-				`It appears that <@${user}> has a balance of ${x.user.balance}‡. (Requested by <@${command.user_id}>)`
-			)
+			say([
+				{
+					type: 'section',
+					text: {
+						type: 'mrkdwn',
+						text: `It appears that <@${user}> has a balance of ${x.user.balance}‡.`,
+					},
+				},
+				{
+					type: 'context',
+					elements: [
+						{
+							type: 'mrkdwn',
+							text: `Requested by <@${command.user_id}>`,
+						},
+					],
+				},
+			])
 		} else {
 			const query = gql`
 				mutation CreateUser($user: String!) {
@@ -112,9 +147,24 @@ const balance = async (app: App) => {
 				)
 			)
 
-			say(
-				`It appears that <@${user}> has a balance of 0‡. (Requested by <@${command.user_id}>)`
-			)
+			say([
+				{
+					type: 'section',
+					text: {
+						type: 'mrkdwn',
+						text: `It appears that <@${user}> has a balance of 0‡.`,
+					},
+				},
+				{
+					type: 'context',
+					elements: [
+						{
+							type: 'mrkdwn',
+							text: `Requested by <@${command.user_id}>`,
+						},
+					],
+				},
+			])
 		}
 	})
 }
