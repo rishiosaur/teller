@@ -120,8 +120,6 @@ const send = (app: App) => {
 	app.command('/transact', async ({ ack, command }) => {
 		await ack()
 
-		console.log(command.text.split(' '))
-
 		const [_amount, _f, _from, _, _to] = command.text.split(' ')
 
 		const from = unwrapUser(_from)
@@ -163,6 +161,89 @@ const send = (app: App) => {
 				`Transaction created: ${transact.balance}‡ from <@${from}> :arrow_right: to <@${to}>! Transaction ID: \`${transact.id}\``
 			)
 		)
+	})
+
+	app.command('/inspect', async ({ ack, command }) => {
+		await ack()
+
+		const [_t] = command.text.split(' ')
+
+		const sayEphemeral = postEphemeralUserCurry(
+			command.channel_id,
+			command.user_id
+		)
+
+		console.log(_t)
+
+		if (_t != '') {
+			try {
+				const { transaction } = await client.request(
+					gql`
+						query Transaction($transaction: String!) {
+							transaction(id: $transaction) {
+								id
+								validated
+								balance
+								from {
+									id
+									balance
+								}
+
+								to {
+									id
+									balance
+								}
+							}
+						}
+					`,
+					{ transaction: _t }
+				)
+
+				sayEphemeral([
+					{
+						type: 'header',
+						text: {
+							type: 'plain_text',
+							text: `Transaction inspection: Transaction #${transaction.id}`,
+							emoji: true,
+						},
+					},
+					{
+						type: 'context',
+						elements: [
+							{
+								type: 'mrkdwn',
+								text: `*Flow*: <@${transaction.from.id}> (${transaction.from.balance}‡) :arrow_right: <@${transaction.to.id}> (${transaction.to.balance}‡)`,
+							},
+						],
+					},
+
+					{
+						type: 'section',
+						fields: [
+							{
+								type: 'mrkdwn',
+								text: `*Balance*: ${transaction.balance}‡`,
+							},
+							{
+								type: 'mrkdwn',
+								text: `*Validated*: ${!transaction.validated ? 'No' : 'Yes'} ${
+									transaction.validated ? ':white_check_mark:' : `:red_circle:`
+								}`,
+							},
+						],
+					},
+				])
+			} catch (err) {
+				sayEphemeral(
+					...blocksAndText(
+						`It looks like \`${_t}\` isn't a transaction in this database. Please try another ID.`
+					)
+				)
+			}
+		} else {
+			sayEphemeral(...blocksAndText('Please supply a transaction ID!'))
+		}
 	})
 
 	app.command('/invoice', async ({ ack, command }) => {
