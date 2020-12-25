@@ -1,12 +1,14 @@
 import { App } from '@slack/bolt'
 import { gql } from 'graphql-request'
-import { unwrapUser, userExists, createUser } from '../functions/users'
-import { client } from '../functions/graphql'
 import {
+	postMessageCurry,
 	blocksAndText,
 	postEphemeralUserCurry,
 	postMessage,
 } from '../functions/chat'
+import { unwrapUser, userExists, createUser } from '../functions/users'
+import { client } from '../functions/graphql'
+
 import { extractNum } from '../functions/util'
 const send = (app: App) => {
 	app.command('/send-hn', async ({ ack, command, say }) => {
@@ -228,6 +230,98 @@ const send = (app: App) => {
 								text: `*Validated*: ${!transaction.validated ? 'No' : 'Yes'} ${
 									transaction.validated ? ':white_check_mark:' : `:red_circle:`
 								}`,
+							},
+						],
+					},
+				])
+			} catch (err) {
+				sayEphemeral(
+					...blocksAndText(
+						`It looks like \`${_t}\` isn't a transaction in this database. Please try another ID.`
+					)
+				)
+			}
+		} else {
+			sayEphemeral(...blocksAndText('Please supply a transaction ID!'))
+		}
+	})
+
+	app.command('/view', async ({ ack, command }) => {
+		await ack()
+
+		const [_t] = command.text.split(' ')
+
+		const say = postMessageCurry(command.channel_id)
+
+		const sayEphemeral = postEphemeralUserCurry(
+			command.channel_id,
+			command.user_id
+		)
+
+		if (_t !== '') {
+			try {
+				const { transaction } = await client.request(
+					gql`
+						query Transaction($transaction: String!) {
+							transaction(id: $transaction) {
+								id
+								validated
+								balance
+								from {
+									id
+									balance
+								}
+
+								to {
+									id
+									balance
+								}
+							}
+						}
+					`,
+					{ transaction: _t }
+				)
+
+				say([
+					{
+						type: 'header',
+						text: {
+							type: 'plain_text',
+							text: `Transaction inspection: Transaction #${transaction.id}`,
+							emoji: true,
+						},
+					},
+					{
+						type: 'context',
+						elements: [
+							{
+								type: 'mrkdwn',
+								text: `*Flow*: <@${transaction.from.id}> (${transaction.from.balance}‡) :arrow_right: <@${transaction.to.id}> (${transaction.to.balance}‡)`,
+							},
+						],
+					},
+
+					{
+						type: 'section',
+						fields: [
+							{
+								type: 'mrkdwn',
+								text: `*Balance*: ${transaction.balance}‡`,
+							},
+							{
+								type: 'mrkdwn',
+								text: `*Validated*: ${!transaction.validated ? 'No' : 'Yes'} ${
+									transaction.validated ? ':white_check_mark:' : `:red_circle:`
+								}`,
+							},
+						],
+					},
+					{
+						type: 'context',
+						elements: [
+							{
+								type: 'mrkdwn',
+								text: `Requested by <@${command.user_id}>`,
 							},
 						],
 					},
