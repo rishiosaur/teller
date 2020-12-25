@@ -268,7 +268,9 @@ const send = (app: App) => {
 				}
 			`
 
-			const { pay: paid } = await client.request(payTransaction)
+			const { pay: paid } = await client.request(payTransaction, {
+				id,
+			})
 
 			if (paid.validated) {
 				sayEphemeral(
