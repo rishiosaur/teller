@@ -252,16 +252,10 @@ const send = (app: App) => {
 
 		if (transaction && transaction.transaction.from.id === user) {
 			const payTransaction = gql`
-				mutation PayTransaction($id: ID!) {
+				mutation PayTransaction($id: String!) {
 					pay(id: $id) {
 						id
 						balance
-						from {
-							id
-						}
-						to {
-							id
-						}
 
 						validated
 					}
