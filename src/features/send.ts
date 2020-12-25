@@ -296,7 +296,7 @@ const send = (app: App) => {
 						elements: [
 							{
 								type: 'mrkdwn',
-								text: `*Flow*: <@${transaction.from.id}> (${transaction.from.balance}‡) :arrow_right: <@${transaction.to.id}> (${transaction.to.balance}‡)`,
+								text: `<@${transaction.from.id}> (${transaction.from.balance}‡) :arrow_right: <@${transaction.to.id}> (${transaction.to.balance}‡)`,
 							},
 						],
 					},
