@@ -173,9 +173,7 @@ const send = (app: App) => {
 			command.user_id
 		)
 
-		console.log(_t)
-
-		if (_t != '') {
+		if (_t !== '') {
 			try {
 				const { transaction } = await client.request(
 					gql`
