@@ -1,12 +1,12 @@
-# Bolt-Typescript-Starter
+# The Teller
 
-A starter library for the Bolt Framework. Pluggable and deployable anywhere! 🔥
+The Slackbot that wraps the HN API!
 
-![build status](https://github.com/rishiosaur/bolt-ts-starter/workflows/build/badge.svg)
-![lint status](https://github.com/rishiosaur/bolt-ts-starter/workflows/lint/badge.svg)
-![format status](https://github.com/rishiosaur/bolt-ts-starter/workflows/format/badge.svg)
+![build status](https://github.com/rishiosaur/teller/workflows/build/badge.svg)
+![lint status](https://github.com/rishiosaur/teller/workflows/lint/badge.svg)
+![format status](https://github.com/rishiosaur/teller/workflows/format/badge.svg)
 
-![GitHub](https://img.shields.io/github/license/rishiosaur/bolt-ts-starter)
-![GitHub issues](https://img.shields.io/github/issues/rishiosaur/bolt-ts-starter)
-![GitHub contributors](https://img.shields.io/github/contributors/rishiosaur/bolt-ts-starter)
-![GitHub last commit](https://img.shields.io/github/last-commit/rishiosaur/bolt-ts-starter)
+![GitHub](https://img.shields.io/github/license/rishiosaur/teller)
+![GitHub issues](https://img.shields.io/github/issues/rishiosaur/teller)
+![GitHub contributors](https://img.shields.io/github/contributors/rishiosaur/teller)
+![GitHub last commit](https://img.shields.io/github/last-commit/rishiosaur/teller)
