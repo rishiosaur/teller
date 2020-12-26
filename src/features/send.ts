@@ -176,17 +176,26 @@ const send = (app: App) => {
 			}
 		`
 
-		const { transact } = await client.request(query, {
-			from,
-			to,
-			balance,
-		})
-
-		sayEphemeral(
-			...blocksAndText(
-				`Transaction created: ${transact.balance}‡ from <@${from}> :arrow_right: to <@${to}>! Transaction ID: \`${transact.id}\``
-			)
-		)
+		await client
+			.request(query, {
+				from,
+				to,
+				balance,
+			})
+			.then(async (transact) => {
+				await sayEphemeral(
+					...blocksAndText(
+						`Transaction created: ${transact.balance}‡ from <@${from}> :arrow_right: to <@${to}>! Transaction ID: \`${transact.id}\``
+					)
+				)
+			})
+			.catch(async () => {
+				await sayEphemeral(
+					...blocksAndText(
+						`hehe you sneaky person; you can't send hn to yourself!`
+					)
+				)
+			})
 	})
 
 	app.command('/inspect', async ({ ack, command }) => {
@@ -397,27 +406,36 @@ const send = (app: App) => {
 			}
 		`
 
-		const { transact } = await client.request(query, {
-			from,
-			to,
-			balance,
-		})
+		await client
+			.request(query, {
+				from,
+				to,
+				balance,
+			})
+			.then(async (transact) => {
+				await sayEphemeral(
+					...blocksAndText(
+						`Transaction created: ${balance}‡ from <@${from}> :arrow_right: to <@${to}>! Transaction ID: \`${transact.id}\``
+					)
+				)
 
-		await sayEphemeral(
-			...blocksAndText(
-				`Transaction created: 5‡ from <@${from}> :arrow_right: to <@${to}>! Transaction ID: \`${transact.id}\``
-			)
-		)
-
-		await postMessage(
-			from,
-			...blocksAndText(
-				`<@${to}> just invoiced you for ${transact.balance}‡! ${
-					_for && _for === 'for' && `Reason: "${forReasons.join(' ')}"`
-				}
-				 Pay this invoice by running \`/pay ${transact.id}\``
-			)
-		)
+				await postMessage(
+					from,
+					...blocksAndText(
+						`<@${to}> just invoiced you for ${transact.balance}‡! ${
+							_for && _for === 'for' && `Reason: "${forReasons.join(' ')}"`
+						}
+					 Pay this invoice by running \`/pay ${transact.id}\``
+					)
+				)
+			})
+			.catch(async () => {
+				await sayEphemeral(
+					...blocksAndText(
+						`hehe you sneaky person; you can't send hn to yourself!`
+					)
+				)
+			})
 	})
 
 	app.command('/pay', async ({ ack, command }) => {
