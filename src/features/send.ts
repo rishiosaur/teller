@@ -59,7 +59,7 @@ const send = (app: App) => {
 					)
 				)
 			})
-			.then((send) => {
+			.then(({ send }) => {
 				if (send.validated) {
 					say(
 						`<@${from}> sent ${balance}‡ to <@${to}> ${
@@ -124,7 +124,7 @@ const send = (app: App) => {
 					)
 				)
 			})
-			.then((send) => {
+			.then(({ send }) => {
 				if (send.validated) {
 					sayEphemeral(
 						...blocksAndText(
@@ -182,7 +182,7 @@ const send = (app: App) => {
 				to,
 				balance,
 			})
-			.then(async (transact) => {
+			.then(async ({ transact }) => {
 				await sayEphemeral(
 					...blocksAndText(
 						`Transaction created: ${transact.balance}‡ from <@${from}> :arrow_right: to <@${to}>! Transaction ID: \`${transact.id}\``
@@ -412,7 +412,7 @@ const send = (app: App) => {
 				to,
 				balance,
 			})
-			.then(async (transact) => {
+			.then(async ({ transact }) => {
 				await sayEphemeral(
 					...blocksAndText(
 						`Transaction created: ${balance}‡ from <@${from}> :arrow_right: to <@${to}>! Transaction ID: \`${transact.id}\``
