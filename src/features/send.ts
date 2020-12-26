@@ -46,31 +46,42 @@ const send = (app: App) => {
 			}
 		`
 
-		const { send } = await client.request(query, {
-			from,
-			to,
-			balance,
-		})
-
-		if (send.validated) {
-			say(
-				`<@${from}> sent ${balance}‡ to <@${to}> ${
-					_for && _for === 'for' && `for "${forReasons.join(' ')}"`
-				}! Transaction ID: \`${send.id}\``
-			)
-		} else {
-			sayEphemeral(
-				...blocksAndText(
-					`Uh oh. It looks like you don't currently have enough HN to make that transaction go through. No worries; you can use \`/pay ${send.id}\` later to make the transaction go through.`
+		await client
+			.request(query, {
+				from,
+				to,
+				balance,
+			})
+			.catch(() => {
+				sayEphemeral(
+					...blocksAndText(
+						`hehe you sneaky person; you can't send hn to yourself!`
+					)
 				)
-			)
-		}
+			})
+			.then((send) => {
+				if (send.validated) {
+					say(
+						`<@${from}> sent ${balance}‡ to <@${to}> ${
+							_for && _for === 'for' && `for "${forReasons.join(' ')}"`
+						}! Transaction ID: \`${send.id}\``
+					)
+				} else {
+					sayEphemeral(
+						...blocksAndText(
+							`Uh oh. It looks like you don't currently have enough HN to make that transaction go through. No worries; you can use \`/pay ${send.id}\` later to make the transaction go through.`
+						)
+					)
+				}
+			})
 	})
 
 	app.command('/slip', async ({ ack, command }) => {
 		await ack()
 
-		const [_amount, _, _user] = command.text.split(' ')
+		console.log(command.text.split(' '))
+
+		const [_amount, _, _user, _for, ...forReasons] = command.text.split(' ')
 
 		const from = command.user_id
 
@@ -100,25 +111,36 @@ const send = (app: App) => {
 			}
 		`
 
-		const { send } = await client.request(query, {
-			from,
-			to,
-			balance,
-		})
-
-		if (send.validated) {
-			sayEphemeral(
-				...blocksAndText(
-					`<@${from}> slipped ${balance}‡ to <@${to}>! Transaction ID: \`${send.id}\``
+		await client
+			.request(query, {
+				from,
+				to,
+				balance,
+			})
+			.catch(() => {
+				sayEphemeral(
+					...blocksAndText(
+						`hehe you sneaky person; you can't send hn to yourself!`
+					)
 				)
-			)
-		} else {
-			sayEphemeral(
-				...blocksAndText(
-					`Uh oh. It looks like you don't currently have enough HN to make that transaction go through. No worries; you can use \`/pay ${send.id}\` later to make the transaction go through.`
-				)
-			)
-		}
+			})
+			.then((send) => {
+				if (send.validated) {
+					sayEphemeral(
+						...blocksAndText(
+							`<@${from}> sent ${balance}‡ to <@${to}> ${
+								_for && _for === 'for' && `for "${forReasons.join(' ')}"`
+							}! Transaction ID: \`${send.id}\``
+						)
+					)
+				} else {
+					sayEphemeral(
+						...blocksAndText(
+							`Uh oh. It looks like you don't currently have enough HN to make that transaction go through. No worries; you can use \`/pay ${send.id}\` later to make the transaction go through.`
+						)
+					)
+				}
+			})
 	})
 
 	app.command('/transact', async ({ ack, command }) => {
@@ -345,7 +367,7 @@ const send = (app: App) => {
 
 		console.log(command.text.split(' '))
 
-		const [_amount, _, _from] = command.text.split(' ')
+		const [_amount, _, _from, _for, ...forReasons] = command.text.split(' ')
 
 		const from = unwrapUser(_from)
 
@@ -390,7 +412,10 @@ const send = (app: App) => {
 		await postMessage(
 			from,
 			...blocksAndText(
-				`<@${to}> just invoiced you for ${transact.balance}‡! Pay this invoice by running \`/pay ${transact.id}\``
+				`<@${to}> just invoiced you for ${transact.balance}‡! ${
+					_for && _for === 'for' && `Reason: "${forReasons.join(' ')}"`
+				}
+				 Pay this invoice by running \`/pay ${transact.id}\``
 			)
 		)
 	})
