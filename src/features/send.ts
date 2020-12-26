@@ -16,7 +16,7 @@ const send = (app: App) => {
 
 		console.log(command.text.split(' '))
 
-		const [_amount, _, _user] = command.text.split(' ')
+		const [_amount, _, _user, _for, ...forReasons] = command.text.split(' ')
 
 		const from = command.user_id
 
@@ -54,7 +54,9 @@ const send = (app: App) => {
 
 		if (send.validated) {
 			say(
-				`<@${from}> sent ${balance}‡ to <@${to}>! Transaction ID: \`${send.id}\``
+				`<@${from}> sent ${balance}‡ to <@${to}> ${
+					_for && _for === 'for' && `for "${forReasons.join(' ')}"`
+				}! Transaction ID: \`${send.id}\``
 			)
 		} else {
 			sayEphemeral(
