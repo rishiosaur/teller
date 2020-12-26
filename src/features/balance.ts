@@ -37,7 +37,7 @@ const balance = async (app: App) => {
 				user,
 			})
 
-			say([
+			sayEphemeral([
 				{
 					type: 'section',
 					text: {
