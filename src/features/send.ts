@@ -37,8 +37,13 @@ const send = (app: App) => {
 		}
 
 		const query = gql`
-			mutation Send($to: String!, $from: String!, $balance: Float!) {
-				send(data: { to: $to, from: $from, balance: $balance }) {
+			mutation Send(
+				$to: String!
+				$from: String!
+				$balance: Float!
+				$for: String
+			) {
+				send(data: { to: $to, from: $from, balance: $balance, for: $for }) {
 					id
 					validated
 					balance
@@ -47,11 +52,21 @@ const send = (app: App) => {
 		`
 
 		await client
-			.request(query, {
-				from,
-				to,
-				balance,
-			})
+			.request(
+				query,
+				_for && _for === 'for'
+					? {
+							from,
+							to,
+							balance,
+							for: forReasons.join(' '),
+					  }
+					: {
+							from,
+							to,
+							balance,
+					  }
+			)
 			.catch(() => {
 				sayEphemeral(
 					...blocksAndText(
@@ -102,8 +117,13 @@ const send = (app: App) => {
 		}
 
 		const query = gql`
-			mutation Send($to: String!, $from: String!, $balance: Float!) {
-				send(data: { to: $to, from: $from, balance: $balance }) {
+			mutation Send(
+				$to: String!
+				$from: String!
+				$balance: Float!
+				$for: String
+			) {
+				send(data: { to: $to, from: $from, balance: $balance, for: $for }) {
 					id
 					validated
 					balance
@@ -112,11 +132,21 @@ const send = (app: App) => {
 		`
 
 		await client
-			.request(query, {
-				from,
-				to,
-				balance,
-			})
+			.request(
+				query,
+				_for && _for === 'for'
+					? {
+							from,
+							to,
+							balance,
+							for: forReasons.join(' '),
+					  }
+					: {
+							from,
+							to,
+							balance,
+					  }
+			)
 			.catch(() => {
 				sayEphemeral(
 					...blocksAndText(
@@ -146,7 +176,15 @@ const send = (app: App) => {
 	app.command('/transact', async ({ ack, command }) => {
 		await ack()
 
-		const [_amount, _f, _from, _, _to] = command.text.split(' ')
+		const [
+			_amount,
+			_f,
+			_from,
+			_,
+			_to,
+			_for,
+			...forReasons
+		] = command.text.split(' ')
 
 		const from = unwrapUser(_from)
 
@@ -167,8 +205,13 @@ const send = (app: App) => {
 		}
 
 		const query = gql`
-			mutation Send($to: String!, $from: String!, $balance: Float!) {
-				transact(data: { to: $to, from: $from, balance: $balance }) {
+			mutation Send(
+				$to: String!
+				$from: String!
+				$balance: Float!
+				$for: String
+			) {
+				transact(data: { to: $to, from: $from, balance: $balance, for: $for }) {
 					id
 					validated
 					balance
@@ -177,15 +220,30 @@ const send = (app: App) => {
 		`
 
 		await client
-			.request(query, {
-				from,
-				to,
-				balance,
-			})
+			.request(
+				query,
+				_for && _for === 'for'
+					? {
+							from,
+							to,
+							balance,
+							for: forReasons.join(' '),
+					  }
+					: {
+							from,
+							to,
+							balance,
+							for: '',
+					  }
+			)
 			.then(async ({ transact }) => {
 				await sayEphemeral(
 					...blocksAndText(
-						`Transaction created: ${transact.balance}‡ from <@${from}> :arrow_right: to <@${to}>! Transaction ID: \`${transact.id}\``
+						`Transaction created: ${
+							transact.balance
+						}‡ from <@${from}> :arrow_right: to <@${to}>${
+							_for && _for === 'for' && ` for ${forReasons.join(' ')}`
+						}! Transaction ID: \`${transact.id}\``
 					)
 				)
 			})
@@ -397,8 +455,13 @@ const send = (app: App) => {
 		}
 
 		const query = gql`
-			mutation Send($to: String!, $from: String!, $balance: Float!) {
-				transact(data: { to: $to, from: $from, balance: $balance }) {
+			mutation Send(
+				$to: String!
+				$from: String!
+				$balance: Float!
+				$for: String
+			) {
+				transact(data: { to: $to, from: $from, balance: $balance, for: $for }) {
 					id
 					validated
 					balance
@@ -407,11 +470,22 @@ const send = (app: App) => {
 		`
 
 		await client
-			.request(query, {
-				from,
-				to,
-				balance,
-			})
+			.request(
+				query,
+				_for && _for === 'for'
+					? {
+							from,
+							to,
+							balance,
+							for: forReasons.join(' '),
+					  }
+					: {
+							from,
+							to,
+							balance,
+							for: '',
+					  }
+			)
 			.then(async ({ transact }) => {
 				await sayEphemeral(
 					...blocksAndText(
