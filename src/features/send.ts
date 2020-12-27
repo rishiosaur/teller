@@ -77,8 +77,8 @@ const send = (app: App) => {
 			.then(({ send }) => {
 				if (send.validated) {
 					say(
-						`<@${from}> sent ${balance}‡ to <@${to}> ${
-							_for && _for === 'for' && `for "${forReasons.join(' ')}"`
+						`<@${from}> sent ${balance}‡ to <@${to}>${
+							_for && _for === 'for' ? `for "${forReasons.join(' ')}"` : ''
 						}! Transaction ID: \`${send.id}\``
 					)
 				} else {
@@ -159,7 +159,7 @@ const send = (app: App) => {
 					sayEphemeral(
 						...blocksAndText(
 							`<@${from}> sent ${balance}‡ to <@${to}> ${
-								_for && _for === 'for' && `for "${forReasons.join(' ')}"`
+								_for && _for === 'for' ? `for "${forReasons.join(' ')}"` : ''
 							}! Transaction ID: \`${send.id}\``
 						)
 					)
@@ -242,7 +242,7 @@ const send = (app: App) => {
 						`Transaction created: ${
 							transact.balance
 						}‡ from <@${from}> :arrow_right: to <@${to}>${
-							_for && _for === 'for' && ` for ${forReasons.join(' ')}`
+							_for && _for === 'for' ? ` for ${forReasons.join(' ')}` : ''
 						}! Transaction ID: \`${transact.id}\``
 					)
 				)
@@ -497,7 +497,7 @@ const send = (app: App) => {
 					from,
 					...blocksAndText(
 						`<@${to}> just invoiced you for ${transact.balance}‡! ${
-							_for && _for === 'for' && `Reason: "${forReasons.join(' ')}"`
+							_for && _for === 'for' ? `Reason: "${forReasons.join(' ')}"` : ''
 						}
 					 Pay this invoice by running \`/pay ${transact.id}\``
 					)
