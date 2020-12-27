@@ -42,7 +42,7 @@ const balance = async (app: App) => {
 					type: 'section',
 					text: {
 						type: 'mrkdwn',
-						text: `It appears that <@${user}> has a balance of ${x.user.balance}‡. `,
+						text: `It appears that <@${user}> has a balance of ${x.user.balance}‡.`,
 					},
 				},
 				{
@@ -68,7 +68,7 @@ const balance = async (app: App) => {
 
 			await sayEphemeral(
 				...blocksAndText(
-					`Since they didn't have one before, I've created a bank account with 0‡ for <@${user}>! Feel free to let them know.`
+					`<@${user}> had not yet opened their account so I took the liberty of opening an account with 0‡. Feel free to let them know!`
 				)
 			)
 
@@ -136,7 +136,7 @@ const balance = async (app: App) => {
 
 			await sayEphemeral(
 				...blocksAndText(
-					`Since they didn't have one before, I've created a bank account with 0‡ for <@${user}>! Feel free to let them know.`
+					`<@${user}> had not yet opened their account so I took the liberty of opening an account with 0‡. Feel free to let them know!`
 				)
 			)
 
