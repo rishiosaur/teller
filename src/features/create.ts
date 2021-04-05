@@ -13,7 +13,9 @@ const create = async (app: App) => {
 		const sayEphemeral = postEphemeralUserCurry(channel, user)
 
 		if (await userExists(user)) {
-			await ack(`You already have a low-interest tax-free savings account with the HN Bank, <@${user}>!`)
+			await ack(
+				`You already have a low-interest tax-free savings account with the HN Bank, <@${user}>!`
+			)
 		} else {
 			const query = gql`
 				mutation CreateUser($user: String!) {
@@ -26,9 +28,7 @@ const create = async (app: App) => {
 			const created = await client.request(query, { user })
 
 			await ack(
-
-					`I've created a bank account with 0‡ for you, <@${user}>! Use your HN wisely... \nYour private access token (IT IS *IMPERATIVE* THAT YOU DO NOT SHARE THIS) is \`${created.createUser.secret}\``
-
+				`I've created a bank account with 0‡ for you, <@${user}>! Use your HN wisely... \nYour private access token (IT IS *IMPERATIVE* THAT YOU DO NOT SHARE THIS) is \`${created.createUser.secret}\``
 			)
 		}
 	})
@@ -52,7 +52,7 @@ const create = async (app: App) => {
 
 		await ack(
 			// ...blocksAndText(
-				`Alright, <@${user}>! I've reset your HN account with ${resetted.resetUserSecret.balance}‡. Your private access token (IT IS *IMPERATIVE* THAT YOU DO NOT SHARE THIS) is now \`${resetted.resetUserSecret.secret}\`.`
+			`Alright, <@${user}>! I've reset your HN account with ${resetted.resetUserSecret.balance}‡. Your private access token (IT IS *IMPERATIVE* THAT YOU DO NOT SHARE THIS) is now \`${resetted.resetUserSecret.secret}\`.`
 			// )
 		)
 	})
