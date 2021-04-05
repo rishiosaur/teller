@@ -1,5 +1,6 @@
 import { App } from '@slack/bolt'
 import { gql } from 'graphql-request'
+import { response } from 'express'
 import {
 	postEphemeralUserCurry,
 	blocksAndText,
@@ -11,7 +12,7 @@ import { unwrapUser, userExists } from '../functions/users'
 
 const balance = async (app: App) => {
 	app.command('/peek', async ({ ack, command }) => {
-		await ack()
+		// await ack()
 		const { channel_id: channel } = command
 
 		const user =
@@ -37,24 +38,28 @@ const balance = async (app: App) => {
 				user,
 			})
 
-			sayEphemeral([
-				{
-					type: 'section',
-					text: {
-						type: 'mrkdwn',
-						text: `It appears that <@${user}> has a balance of ${x.user.balance}‡. `,
-					},
-				},
-				{
-					type: 'context',
-					elements: [
-						{
+			await ack({
+				blocks: [
+					{
+						type: 'section',
+						text: {
 							type: 'mrkdwn',
-							text: `Requested by <@${command.user_id}>`,
+							text: `It appears that <@${user}> has a balance of ${x.user.balance}‡. `,
 						},
-					],
-				},
-			])
+					},
+					{
+						type: 'context',
+						elements: [
+							{
+								type: 'mrkdwn',
+								text: `Requested by <@${command.user_id}>`,
+							},
+						],
+					},
+				] as any,
+				text: `It appears that <@${user}> has a balance of ${x.user.balance}‡.`,
+				response_type: 'ephemeral',
+			})
 		} else {
 			const query = gql`
 				mutation CreateUser($user: String!) {
@@ -66,15 +71,15 @@ const balance = async (app: App) => {
 
 			await client.request(query, { user })
 
-			await sayEphemeral(
-				...blocksAndText(
-					`Since they didn't have one before, I've created a bank account with 0‡ for <@${user}>! Feel free to let them know.`
-				)
-			)
-
-			sayEphemeral(
-				...blocksAndText(`It appears that <@${user}> has a balance of 0‡.`)
-			)
+			// await sayEphemeral(
+			// 	...blocksAndText(
+			// 		`Since they didn't have one before, I've created a bank account with 0‡ for <@${user}>! Feel free to let them know.`
+			// 	)
+			// )
+			await ack({
+				response_type: 'ephemeral',
+				text: `It appears that <@${user}> has a balance of 0‡.`,
+			})
 		}
 	})
 
@@ -105,24 +110,28 @@ const balance = async (app: App) => {
 				user,
 			})
 
-			say([
-				{
-					type: 'section',
-					text: {
-						type: 'mrkdwn',
-						text: `It appears that <@${user}> has a balance of ${x.user.balance}‡.`,
-					},
-				},
-				{
-					type: 'context',
-					elements: [
-						{
+			await ack({
+				blocks: [
+					{
+						type: 'section',
+						text: {
 							type: 'mrkdwn',
-							text: `Requested by <@${command.user_id}>`,
+							text: `It appears that <@${user}> has a balance of ${x.user.balance}‡.`,
 						},
-					],
-				},
-			])
+					},
+					{
+						type: 'context',
+						elements: [
+							{
+								type: 'mrkdwn',
+								text: `Requested by <@${command.user_id}>`,
+							},
+						],
+					},
+				],
+				text: `It appears that <@${user}> has a balance of ${x.user.balance}‡.`,
+				response_type: 'ephemeral',
+			})
 		} else {
 			const query = gql`
 				mutation CreateUser($user: String!) {
@@ -134,30 +143,34 @@ const balance = async (app: App) => {
 
 			await client.request(query, { user })
 
-			await sayEphemeral(
-				...blocksAndText(
-					`Since they didn't have one before, I've created a bank account with 0‡ for <@${user}>! Feel free to let them know.`
-				)
-			)
+			// await sayEphemeral(
+			// 	...blocksAndText(
+			// 		`Since they didn't have one before, I've created a bank account with 0‡ for <@${user}>! Feel free to let them know.`
+			// 	)
+			// )
 
-			say([
-				{
-					type: 'section',
-					text: {
-						type: 'mrkdwn',
-						text: `It appears that <@${user}> has a balance of 0‡.`,
-					},
-				},
-				{
-					type: 'context',
-					elements: [
-						{
+			await ack({
+				blocks: [
+					{
+						type: 'section',
+						text: {
 							type: 'mrkdwn',
-							text: `Requested by <@${command.user_id}>`,
+							text: `It appears that <@${user}> has a balance of 0‡.`,
 						},
-					],
-				},
-			])
+					},
+					{
+						type: 'context',
+						elements: [
+							{
+								type: 'mrkdwn',
+								text: `Requested by <@${command.user_id}>`,
+							},
+						],
+					},
+				],
+				text: `It appears that <@${user}> has a balance of 0‡.`,
+				response_type: 'ephemeral',
+			})
 		}
 	})
 }
