@@ -12,7 +12,7 @@ import { client } from '../functions/graphql'
 import { extractNum } from '../functions/util'
 const send = (app: App) => {
 	app.command('/send-hn', async ({ ack, command, say }) => {
-		await ack()
+		// await ack()
 
 		console.log(command.text.split(' '))
 
@@ -76,7 +76,7 @@ const send = (app: App) => {
 			})
 			.then(({ send }) => {
 				if (send.validated) {
-					say(
+					await ack(
 						`<@${from}> sent ${balance}‡ to <@${to}>${
 							_for && _for === 'for' ? `for "${forReasons.join(' ')}"` : ''
 						}! Transaction ID: \`${send.id}\``
