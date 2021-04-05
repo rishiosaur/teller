@@ -84,7 +84,7 @@ const balance = async (app: App) => {
 	})
 
 	app.command('/balance', async ({ ack, command }) => {
-		await ack()
+		// await ack()
 		const { channel_id: channel } = command
 
 		const user =
@@ -130,7 +130,7 @@ const balance = async (app: App) => {
 					},
 				],
 				text: `It appears that <@${user}> has a balance of ${x.user.balance}‡.`,
-				response_type: 'ephemeral',
+				response_type: 'in_channel',
 			})
 		} else {
 			const query = gql`
@@ -169,7 +169,7 @@ const balance = async (app: App) => {
 					},
 				],
 				text: `It appears that <@${user}> has a balance of 0‡.`,
-				response_type: 'ephemeral',
+				response_type: 'in_channel',
 			})
 		}
 	})
