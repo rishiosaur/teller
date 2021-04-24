@@ -74,7 +74,7 @@ const send = (app: App) => {
 					)
 				)
 			})
-			.then(({ send }) => {
+			.then(async ({ send }) => {
 				if (send.validated) {
 					await ack(
 						`<@${from}> sent ${balance}‡ to <@${to}>${
