@@ -73,7 +73,7 @@ const balance = async (app: App) => {
 
 			// await sayEphemeral(
 			// 	...blocksAndText(
-			// 		`Since they didn't have one before, I've created a bank account with 0‡ for <@${user}>! Feel free to let them know.`
+			// 		`Since the	y didn't have one before, I've created a bank account with 0‡ for <@${user}>! Feel free to let them know.`
 			// 	)
 			// )
 			await ack({
