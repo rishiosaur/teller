@@ -1,6 +1,7 @@
 import { token } from '../config'
 
 import { app } from '../index'
+import { runSequential, sleep } from './async'
 
 export const postMessage = (
 	channel: string,
@@ -103,3 +104,46 @@ export const blocksAndText = (
 		},
 	]
 ): [any, string] => [customBlock(text), text]
+
+
+export const removeActionsFromMessage = async (blockActionBody: any) => {
+	const { ts } = blockActionBody.message
+
+	const channel = blockActionBody.channel.id
+
+	const { text } = blockActionBody.message
+
+	const filteredMessage = (blockActionBody.message.blocks as any[]).filter(
+		({ type }) => type !== 'actions'
+	)
+
+	return app.client.chat.update({
+		token,
+		channel,
+		ts,
+		text,
+		blocks: filteredMessage,
+	})
+}
+
+export const removeActionsFromCustom = async (ts, channel, text, blocks) =>
+	app.client.chat.update({
+		token,
+		channel,
+		ts,
+		text,
+		blocks,
+	})
+
+export type MessageString = string | [string, number]
+
+export const sendSequentially = async <T>(
+	messages: MessageString[],
+	messageFunc: (blocks: Array<any>, text: string) => Promise<T>
+) =>
+	runSequential(
+		messages.map((v) => async () => {
+			await messageFunc(
+				...blocksAndText(typeof v === 'string' ? v : v[0].toString())
+			).then(() => sleep((v[1] as number) || 1500))
+		}))
