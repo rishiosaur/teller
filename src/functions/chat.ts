@@ -105,7 +105,6 @@ export const blocksAndText = (
 	]
 ): [any, string] => [customBlock(text), text]
 
-
 export const removeActionsFromMessage = async (blockActionBody: any) => {
 	const { ts } = blockActionBody.message
 
@@ -146,4 +145,5 @@ export const sendSequentially = async <T>(
 			await messageFunc(
 				...blocksAndText(typeof v === 'string' ? v : v[0].toString())
 			).then(() => sleep((v[1] as number) || 1500))
-		}))
+		})
+	)
