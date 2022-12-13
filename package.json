@@ -7,7 +7,7 @@
 		"@slack/bolt": "^2.1.1",
 		"@types/node": "^14.0.14",
 		"dotenv": "^8.2.0",
-		"express": "^4.17.1",
+		"express": "^4.17.3",
 		"graphql": "^15.4.0",
 		"graphql-request": "^3.3.0",
 		"ts-node": "^8.10.2",
